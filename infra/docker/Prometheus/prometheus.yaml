@@ -1,0 +1,18 @@
+global:
+  scrape_interval: "15s"  
+  evaluation_interval: "15s"
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "todo.api"
+    scrape_interval: "5s"
+    static_configs:
+      - targets: ["todo.api:6001"]
+
+  - job_name: "todo.db"
+    scrape_interval: "5s"
+    static_configs:
+      - targets: ["todo.postgresql-exporter:9187"]

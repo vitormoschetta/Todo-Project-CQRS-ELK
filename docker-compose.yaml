@@ -1,0 +1,103 @@
+version: "3"
+
+networks: 
+  todonetwork:      
+    driver: bridge
+    name: todo-network
+
+services:
+  db:
+    container_name: todo.db
+    image: postgres    
+    environment:
+      - POSTGRES_USER=todouser
+      - POSTGRES_PASSWORD=Postgres@123
+      - POSTGRES_DB=tododb
+    ports:
+      - 5432:5432
+    volumes:
+      - ./infra/docker/Database/:/tmp/seeds/
+    networks:
+      - todonetwork
+
+  rabbitmq:
+    container_name: todo.rabbitmq
+    image: rabbitmq:3.10-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=todouser
+      - RABBITMQ_DEFAULT_PASS=123456
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - todonetwork  
+
+  api:
+    container_name: todo.api
+    image: vitormoschetta/todo.api
+    build:
+      context: .
+      dockerfile: infra/docker/Todo.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://*:6001
+      - ConnectionStrings__DefaultConnection=Server=todo.db;Port=5432;Database=tododb;User Id=todouser;Password=Postgres@123;
+      - QueueSettings__Host=todo.rabbitmq
+      - QueueSettings__Queue=TodoQueue
+    ports:
+      - 6001:6001
+    networks:
+      - todonetwork
+    depends_on:
+      - db
+      - rabbitmq
+    # logging:
+    #   driver: journald
+
+  ui.blazor:
+    container_name: todo.ui.blazor
+    image: vitormoschetta/todo.ui.blazor
+    build:
+      context: .
+      dockerfile: ./infra/docker/Todo.UI.Blazor/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://*:6002
+      - API_URL_CONNECTION=http://todo.api:6001/api/
+    ports:
+      - 6002:6002
+    networks:
+      - todonetwork
+    depends_on:
+      - api
+
+  postgresql-exporter:
+    container_name: todo.postgresql-exporter
+    image: wrouesnel/postgres_exporter
+    environment:
+      - DATA_SOURCE_NAME=postgresql://todouser:Postgres@123@db:5432/tododb?sslmode=disable
+    ports:
+      - 9187:9187
+    networks:
+      - todonetwork
+
+  prometheus:
+    container_name: todo.prometheus
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./infra/docker/Prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+    networks:
+      - todonetwork
+
+  grafana:
+    container_name: todo.grafana
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./infra/docker/Grafana/provisioning/:/etc/grafana/provisioning/
+      - ./infra/docker/Grafana/dashboards/:/etc/grafana/dashboards/
+    networks:
+      - todonetwork
