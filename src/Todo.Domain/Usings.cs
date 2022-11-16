@@ -14,5 +14,7 @@ global using Todo.Domain.Contracts.Services;
 global using Todo.Domain.Events.Notifications;
 global using Todo.Application.Enums;
 global using Todo.Shared.Utils;
+global using Todo.Domain.Contracts.Commands;
+global using Todo.Domain.Contracts.Events;
 
 

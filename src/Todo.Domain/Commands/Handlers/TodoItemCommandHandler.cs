@@ -1,14 +1,12 @@
-using Todo.Domain.Events.Handlers;
-
 namespace Todo.Domain.Commands.Handlers
 {
-    public class TodoItemCommandHandler
+    public class TodoItemCommandHandler : ITodoItemCommandHandler
     {
         private readonly IUnitOfWork _uow;
         private readonly ILogger<TodoItemCommandHandler> _logger;
-        private readonly TodoItemEventHandler _todoItemEventHandler;
+        private readonly ITodoItemEventHandler _todoItemEventHandler;
 
-        public TodoItemCommandHandler(IUnitOfWork uow, ILogger<TodoItemCommandHandler> logger, TodoItemEventHandler todoItemEventHandler)
+        public TodoItemCommandHandler(IUnitOfWork uow, ILogger<TodoItemCommandHandler> logger, ITodoItemEventHandler todoItemEventHandler)
         {
             _uow = uow;
             _logger = logger;

@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Todo.Api.Middlewares;
 using Todo.Api.Services;
 using Todo.Domain.Commands.Handlers;
+using Todo.Domain.Contracts.Commands;
+using Todo.Domain.Contracts.Events;
 using Todo.Domain.Contracts.Repositories;
 using Todo.Domain.Contracts.Services;
 using Todo.Domain.Events.Handlers;
@@ -21,8 +23,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IMessageService, MessageService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<TodoItemCommandHandler>();
-builder.Services.AddScoped<TodoItemEventHandler>();
+builder.Services.AddScoped<ITodoItemCommandHandler, TodoItemCommandHandler>();
+builder.Services.AddScoped<ITodoItemEventHandler, TodoItemEventHandler>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {

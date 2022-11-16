@@ -1,6 +1,6 @@
 namespace Todo.Domain.Events.Handlers
 {
-    public class TodoItemEventHandler
+    public class TodoItemEventHandler : ITodoItemEventHandler
     {
         private readonly IMessageService _messageService;
 

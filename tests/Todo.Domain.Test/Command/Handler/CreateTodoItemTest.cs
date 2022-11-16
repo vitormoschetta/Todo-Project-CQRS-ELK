@@ -1,4 +1,6 @@
 
+using Todo.Domain.Contracts.Commands;
+using Todo.Domain.Contracts.Events;
 using Todo.Domain.Events.Handlers;
 
 namespace Todo.Domain.Test.Command.Handler
@@ -8,8 +10,8 @@ namespace Todo.Domain.Test.Command.Handler
         private readonly IUnitOfWork _uow;
         private readonly ILogger<TodoItemCommandHandler> _logger;
         private readonly IMessageService _messageService;
-        private readonly TodoItemEventHandler _event;
-        private readonly TodoItemCommandHandler _handler;
+        private readonly ITodoItemEventHandler _event;
+        private readonly ITodoItemCommandHandler _handler;
 
         public CreateTodoItemTest()
         {

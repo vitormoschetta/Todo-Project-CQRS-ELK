@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Todo.Application.Commands.Requests;
 using Todo.Domain.Commands;
-using Todo.Domain.Commands.Handlers;
+using Todo.Domain.Contracts.Commands;
 using Todo.Domain.Entities;
 using Todo.Infrastructure.Database;
 
@@ -12,10 +12,10 @@ namespace Todo.Api.Controllers
     [Route("api/[controller]")]
     public class TodoItemController : ControllerBase
     {
-        private readonly TodoItemCommandHandler _handler;
+        private readonly ITodoItemCommandHandler _handler;
         private readonly AppDbContext _context;
 
-        public TodoItemController(TodoItemCommandHandler handler, AppDbContext context)
+        public TodoItemController(ITodoItemCommandHandler handler, AppDbContext context)
         {
             _handler = handler;
             _context = context;
