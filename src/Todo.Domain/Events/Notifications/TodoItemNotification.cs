@@ -1,6 +1,6 @@
 namespace Todo.Domain.Events.Notifications
 {
-    public class TodoItemNotification : INotification
+    public class TodoItemNotification
     {
         public TodoItemNotification(TodoItem todoItem)
         {

@@ -1,6 +1,6 @@
 namespace Todo.Application.Commands.Requests
 {
-    public class CreateTodoItemRequest : Command, IRequest<CommandResponse>
+    public class CreateTodoItemRequest : Command
     {
         public string Title { get; set; } = string.Empty;
         public bool Done { get; set; }

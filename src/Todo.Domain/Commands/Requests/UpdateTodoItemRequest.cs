@@ -1,6 +1,6 @@
 namespace Todo.Application.Commands.Requests
 {
-    public class UpdateTodoItemRequest : Command, IRequest<CommandResponse>
+    public class UpdateTodoItemRequest : Command
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;

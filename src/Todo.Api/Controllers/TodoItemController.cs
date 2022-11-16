@@ -1,8 +1,8 @@
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Todo.Application.Commands.Requests;
 using Todo.Domain.Commands;
+using Todo.Domain.Commands.Handlers;
 using Todo.Domain.Entities;
 using Todo.Infrastructure.Database;
 
@@ -12,12 +12,12 @@ namespace Todo.Api.Controllers
     [Route("api/[controller]")]
     public class TodoItemController : ControllerBase
     {
-        private readonly IMediator _mediator;
+        private readonly TodoItemCommandHandler _handler;
         private readonly AppDbContext _context;
 
-        public TodoItemController(IMediator mediator, AppDbContext context)
+        public TodoItemController(TodoItemCommandHandler handler, AppDbContext context)
         {
-            _mediator = mediator;
+            _handler = handler;
             _context = context;
         }
 
@@ -25,7 +25,7 @@ namespace Todo.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<CommandResponse>> Create([FromBody] CreateTodoItemRequest request)
         {
-            var response = await _mediator.Send(request);            
+            var response = await _handler.Handle(request);
 
             if (response.Success == false)
                 return BadRequest(response);
@@ -40,7 +40,7 @@ namespace Todo.Api.Controllers
             if (id != request.Id)
                 return BadRequest(CommandResponse.Fail("Id da requisição não confere com o id do recurso"));
 
-            var response = await _mediator.Send(request);
+            var response = await _handler.Handle(request);
 
             if (response.Success == false)
                 return BadRequest(response);
@@ -52,7 +52,7 @@ namespace Todo.Api.Controllers
         [HttpDelete()]
         public async Task<ActionResult<CommandResponse>> Delete([FromQuery] DeleteTodoItemRequest request)
         {
-            var response = await _mediator.Send(request);
+            var response = await _handler.Handle(request);
 
             if (response.Success == false)
                 return BadRequest(response);

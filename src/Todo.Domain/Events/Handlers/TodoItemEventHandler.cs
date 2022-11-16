@@ -1,10 +1,6 @@
 namespace Todo.Domain.Events.Handlers
 {
-    public class TodoItemEventHandler :
-                        INotificationHandler<CreatedTodoItemNotification>,
-                        INotificationHandler<DeletedTodoItemNotification>,
-                        INotificationHandler<MarkedAsDoneTodoItemNotification>,
-                        INotificationHandler<UpdatedTodoItemNotification>
+    public class TodoItemEventHandler
     {
         private readonly IMessageService _messageService;
 
@@ -13,22 +9,22 @@ namespace Todo.Domain.Events.Handlers
             _messageService = messageService;
         }
 
-        public async Task Handle(CreatedTodoItemNotification notification, CancellationToken cancellationToken)
+        public async Task Handle(CreatedTodoItemNotification notification)
         {
             await SendNotification(notification, EMessageType.Created);
         }
 
-        public async Task Handle(DeletedTodoItemNotification notification, CancellationToken cancellationToken)
+        public async Task Handle(DeletedTodoItemNotification notification)
         {
             await SendNotification(notification, EMessageType.Deleted);
         }
 
-        public async Task Handle(MarkedAsDoneTodoItemNotification notification, CancellationToken cancellationToken)
+        public async Task Handle(MarkedAsDoneTodoItemNotification notification)
         {
             await SendNotification(notification, EMessageType.Updated);
         }
 
-        public async Task Handle(UpdatedTodoItemNotification notification, CancellationToken cancellationToken)
+        public async Task Handle(UpdatedTodoItemNotification notification)
         {
             await SendNotification(notification, EMessageType.Updated);
         }

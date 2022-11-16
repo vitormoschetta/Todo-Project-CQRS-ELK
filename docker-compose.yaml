@@ -69,35 +69,4 @@ services:
     networks:
       - todonetwork
     depends_on:
-      - api
-
-  postgresql-exporter:
-    container_name: todo.postgresql-exporter
-    image: wrouesnel/postgres_exporter
-    environment:
-      - DATA_SOURCE_NAME=postgresql://todouser:Postgres@123@db:5432/tododb?sslmode=disable
-    ports:
-      - 9187:9187
-    networks:
-      - todonetwork
-
-  prometheus:
-    container_name: todo.prometheus
-    image: prom/prometheus
-    ports:
-      - 9090:9090
-    volumes:
-      - ./infra/docker/Prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
-    networks:
-      - todonetwork
-
-  grafana:
-    container_name: todo.grafana
-    image: grafana/grafana
-    ports:
-      - 3000:3000
-    volumes:
-      - ./infra/docker/Grafana/provisioning/:/etc/grafana/provisioning/
-      - ./infra/docker/Grafana/dashboards/:/etc/grafana/dashboards/
-    networks:
-      - todonetwork
+      - api  

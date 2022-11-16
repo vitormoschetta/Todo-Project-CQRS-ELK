@@ -1,23 +1,21 @@
+using Todo.Domain.Events.Handlers;
+
 namespace Todo.Domain.Commands.Handlers
 {
-    public class TodoItemCommandHandler :
-                        IRequestHandler<CreateTodoItemRequest, CommandResponse>,
-                        IRequestHandler<DeleteTodoItemRequest, CommandResponse>,
-                        IRequestHandler<MarkAsDoneTodoItemRequest, CommandResponse>,
-                        IRequestHandler<UpdateTodoItemRequest, CommandResponse>
+    public class TodoItemCommandHandler
     {
         private readonly IUnitOfWork _uow;
-        private readonly IMediator _mediator;
         private readonly ILogger<TodoItemCommandHandler> _logger;
+        private readonly TodoItemEventHandler _todoItemEventHandler;
 
-        public TodoItemCommandHandler(IUnitOfWork uow, IMediator mediator, ILogger<TodoItemCommandHandler> logger)
+        public TodoItemCommandHandler(IUnitOfWork uow, ILogger<TodoItemCommandHandler> logger, TodoItemEventHandler todoItemEventHandler)
         {
             _uow = uow;
-            _mediator = mediator;
             _logger = logger;
+            _todoItemEventHandler = todoItemEventHandler;
         }
 
-        public async Task<CommandResponse> Handle(CreateTodoItemRequest request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(CreateTodoItemRequest request)
         {
             if (request.IsInvalid)
                 return CommandResponse.Fail(request.Errors);
@@ -33,12 +31,12 @@ namespace Todo.Domain.Commands.Handlers
             await _uow.TodoItems.Add(todoItem);
             await _uow.Commit();
 
-            await _mediator.Publish(new CreatedTodoItemNotification(todoItem), cancellationToken);
+            await _todoItemEventHandler.Handle(new CreatedTodoItemNotification(todoItem));
 
             return CommandResponse.Ok;
         }
 
-        public async Task<CommandResponse> Handle(UpdateTodoItemRequest request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(UpdateTodoItemRequest request)
         {
             if (request.IsInvalid)
                 return CommandResponse.Fail(request.Errors);
@@ -52,12 +50,12 @@ namespace Todo.Domain.Commands.Handlers
 
             await _uow.Commit();
 
-            await _mediator.Publish(new UpdatedTodoItemNotification(todoItem), cancellationToken);
+            await _todoItemEventHandler.Handle(new UpdatedTodoItemNotification(todoItem));
 
             return CommandResponse.Ok;
         }
 
-        public async Task<CommandResponse> Handle(DeleteTodoItemRequest request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(DeleteTodoItemRequest request)
         {
             if (request.IsInvalid)
                 return CommandResponse.Fail(request.Errors);
@@ -70,12 +68,12 @@ namespace Todo.Domain.Commands.Handlers
             await _uow.TodoItems.Remove(todoItem);
             await _uow.Commit();
 
-            await _mediator.Publish(new DeletedTodoItemNotification(todoItem), cancellationToken);
+            await _todoItemEventHandler.Handle(new DeletedTodoItemNotification(todoItem));
 
             return CommandResponse.Ok;
         }
 
-        public async Task<CommandResponse> Handle(MarkAsDoneTodoItemRequest request, CancellationToken cancellationToken)
+        public async Task<CommandResponse> Handle(MarkAsDoneTodoItemRequest request)
         {
             if (request.IsInvalid)
                 return CommandResponse.Fail(request.Errors);
@@ -89,7 +87,7 @@ namespace Todo.Domain.Commands.Handlers
 
             await _uow.Commit();
 
-            await _mediator.Publish(new MarkedAsDoneTodoItemNotification(todoItem), cancellationToken);
+            await _todoItemEventHandler.Handle(new MarkedAsDoneTodoItemNotification(todoItem));
 
             return CommandResponse.Ok;
         }

@@ -1,6 +1,6 @@
 namespace Todo.Application.Commands.Requests
 {
-    public class MarkAsDoneTodoItemRequest : Command, IRequest<CommandResponse>
+    public class MarkAsDoneTodoItemRequest : Command
     {
         public Guid Id { get; set; }
 

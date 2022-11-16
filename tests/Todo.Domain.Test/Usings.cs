@@ -1,6 +1,4 @@
 global using Xunit;
-global using Castle.Core.Logging;
-global using MediatR;
 global using Microsoft.Extensions.Logging;
 global using NSubstitute;
 global using Todo.Application.Commands.Requests;

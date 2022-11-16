@@ -2,10 +2,8 @@ global using Microsoft.EntityFrameworkCore.Query;
 global using Microsoft.Extensions.Logging;
 
 global using System.Text.Json.Serialization;
-global using System.Linq.Expressions;
 global using FluentValidation;
 global using FluentValidation.Results;
-global using MediatR;
 
 global using Todo.Domain.Commands;
 global using Todo.Application.Commands.Requests;

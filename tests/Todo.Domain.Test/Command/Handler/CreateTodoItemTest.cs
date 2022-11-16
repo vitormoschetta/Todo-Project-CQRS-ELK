@@ -1,21 +1,23 @@
 
+using Todo.Domain.Events.Handlers;
+
 namespace Todo.Domain.Test.Command.Handler
 {
     public class CreateTodoItemTest
     {
         private readonly IUnitOfWork _uow;
-        private readonly IMediator _mediator;
         private readonly ILogger<TodoItemCommandHandler> _logger;
         private readonly IMessageService _messageService;
+        private readonly TodoItemEventHandler _event;
         private readonly TodoItemCommandHandler _handler;
 
         public CreateTodoItemTest()
         {
             _uow = Substitute.For<IUnitOfWork>();
-            _mediator = Substitute.For<IMediator>();
             _logger = new Logger<TodoItemCommandHandler>(new LoggerFactory());
             _messageService = Substitute.For<IMessageService>();
-            _handler = new TodoItemCommandHandler(_uow, _mediator, _logger);
+            _event = new TodoItemEventHandler(_messageService);
+            _handler = new TodoItemCommandHandler(_uow, _logger, _event);
         }
 
         [Fact]
@@ -29,7 +31,7 @@ namespace Todo.Domain.Test.Command.Handler
             };
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler.Handle(command);
 
             // Assert
             Assert.NotNull(result);
@@ -47,7 +49,7 @@ namespace Todo.Domain.Test.Command.Handler
             };
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler.Handle(command);
 
             // Assert
             Assert.NotNull(result);
