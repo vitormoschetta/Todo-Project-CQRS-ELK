@@ -1,6 +1,6 @@
 namespace Todo.Application.Enums
 {
-    public enum EMessageType
+    public enum EEventType
     {
         Created,
         Updated,

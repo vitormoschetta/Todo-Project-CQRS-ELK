@@ -4,13 +4,13 @@ namespace Todo.Domain.Commands.Handlers
     {
         private readonly IUnitOfWork _uow;
         private readonly ILogger<TodoItemCommandHandler> _logger;
-        private readonly ITodoItemEventHandler _todoItemEventHandler;
+        private readonly IMediator _mediator;
 
-        public TodoItemCommandHandler(IUnitOfWork uow, ILogger<TodoItemCommandHandler> logger, ITodoItemEventHandler todoItemEventHandler)
+        public TodoItemCommandHandler(IUnitOfWork uow, ILogger<TodoItemCommandHandler> logger, IMediator mediator)
         {
             _uow = uow;
             _logger = logger;
-            _todoItemEventHandler = todoItemEventHandler;
+            _mediator = mediator;
         }
 
         public async Task<CommandResponse> Handle(CreateTodoItemRequest request)
@@ -29,7 +29,7 @@ namespace Todo.Domain.Commands.Handlers
             await _uow.TodoItems.Add(todoItem);
             await _uow.Commit();
 
-            await _todoItemEventHandler.Handle(new CreatedTodoItemNotification(todoItem));
+            await _mediator.Publish(new CreatedTodoItemNotification(todoItem));
 
             return CommandResponse.Ok;
         }
@@ -48,7 +48,7 @@ namespace Todo.Domain.Commands.Handlers
 
             await _uow.Commit();
 
-            await _todoItemEventHandler.Handle(new UpdatedTodoItemNotification(todoItem));
+            await _mediator.Publish(new UpdatedTodoItemNotification(todoItem));
 
             return CommandResponse.Ok;
         }
@@ -66,7 +66,7 @@ namespace Todo.Domain.Commands.Handlers
             await _uow.TodoItems.Remove(todoItem);
             await _uow.Commit();
 
-            await _todoItemEventHandler.Handle(new DeletedTodoItemNotification(todoItem));
+            await _mediator.Publish(new DeletedTodoItemNotification(todoItem));
 
             return CommandResponse.Ok;
         }
@@ -85,7 +85,7 @@ namespace Todo.Domain.Commands.Handlers
 
             await _uow.Commit();
 
-            await _todoItemEventHandler.Handle(new MarkedAsDoneTodoItemNotification(todoItem));
+            await _mediator.Publish(new MarkedAsDoneTodoItemNotification(todoItem));
 
             return CommandResponse.Ok;
         }

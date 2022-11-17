@@ -1,7 +1,6 @@
 
 using Todo.Domain.Contracts.Commands;
 using Todo.Domain.Contracts.Events;
-using Todo.Domain.Events.Handlers;
 
 namespace Todo.Domain.Test.Command.Handler
 {
@@ -10,7 +9,7 @@ namespace Todo.Domain.Test.Command.Handler
         private readonly IUnitOfWork _uow;
         private readonly ILogger<TodoItemCommandHandler> _logger;
         private readonly IMessageService _messageService;
-        private readonly ITodoItemEventHandler _event;
+        private readonly IMediator _mediator;
         private readonly ITodoItemCommandHandler _handler;
 
         public CreateTodoItemTest()
@@ -18,8 +17,8 @@ namespace Todo.Domain.Test.Command.Handler
             _uow = Substitute.For<IUnitOfWork>();
             _logger = new Logger<TodoItemCommandHandler>(new LoggerFactory());
             _messageService = Substitute.For<IMessageService>();
-            _event = new TodoItemEventHandler(_messageService);
-            _handler = new TodoItemCommandHandler(_uow, _logger, _event);
+            _mediator = Substitute.For<IMediator>();
+            _handler = new TodoItemCommandHandler(_uow, _logger, _mediator);
         }
 
         [Fact]
