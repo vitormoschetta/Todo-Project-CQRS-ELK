@@ -11,7 +11,7 @@ namespace Todo.Domain
             _serviceProvider = serviceProvider;
         }
 
-        public async Task Publish<T>(T @event) where T : IDomainEvent
+        public Task Publish<T>(T @event) where T : IDomainEvent
         {
             var type = @event.GetType();
 
@@ -20,15 +20,23 @@ namespace Todo.Domain
             var handlers = _serviceProvider.GetServices(handlerType);
 
             foreach (var handler in handlers)
-            {                
+            {
+                if (handler == null)
+                    continue;
+
                 var method = handler
                                 .GetType()
                                 .GetMethods()
                                 .Where(m => m.Name == "Handle" && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == type)
                                 .FirstOrDefault();
-                
-                await (Task)method.Invoke(handler, new object[] { @event });
+
+                if (method == null)
+                    continue;
+
+                method.Invoke(handler, new object[] { @event });
             }
+
+            return Task.CompletedTask;
         }
     }
 }
