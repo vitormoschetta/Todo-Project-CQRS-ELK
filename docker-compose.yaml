@@ -48,9 +48,9 @@ services:
       - 6001:6001
     networks:
       - todonetwork
-    depends_on:
-      - db
-      - rabbitmq
+    # depends_on:
+    #   - db
+    #   - rabbitmq
     # logging:
     #   driver: journald
 

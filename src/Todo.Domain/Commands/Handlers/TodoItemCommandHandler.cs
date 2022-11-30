@@ -23,15 +23,26 @@ namespace Todo.Domain.Commands.Handlers
 
             var todoItem = request.ToEntity();
 
-            // TODO: Abrir transação para salvar para confirmar a transação apena depois de enviar a mensagem. 
-            // Se houver erro ao enviar a mensagem, fazer rollback.
+            await _uow.BeginTransaction();
 
-            await _uow.TodoItems.Add(todoItem);
-            await _uow.Commit();
+            try
+            {
+                await _uow.TodoItems.Add(todoItem);
+                await _uow.Commit();
 
-            await _mediator.Publish(new CreatedTodoItemNotification(todoItem));
+                await _mediator.Publish(new CreatedTodoItemNotification(todoItem));
 
-            return CommandResponse.Ok;
+                await _uow.CommitTransaction();
+
+                return CommandResponse.Ok;
+            }
+            catch (Exception ex)
+            {
+                await _uow.RollbackTransaction();
+
+                _logger.LogError(ex, "Erro ao criar item");
+                return CommandResponse.Fail("Erro ao criar item");
+            }
         }
 
         public async Task<CommandResponse> Handle(UpdateTodoItemRequest request)
@@ -46,11 +57,25 @@ namespace Todo.Domain.Commands.Handlers
 
             todoItem.Update(request.Title, request.Done);
 
-            await _uow.Commit();
+            await _uow.BeginTransaction();
 
-            await _mediator.Publish(new UpdatedTodoItemNotification(todoItem));
+            try
+            {                
+                await _uow.Commit();
 
-            return CommandResponse.Ok;
+                await _mediator.Publish(new UpdatedTodoItemNotification(todoItem));
+
+                await _uow.CommitTransaction();
+
+                return CommandResponse.Ok;
+            }
+            catch (Exception ex)
+            {
+                await _uow.RollbackTransaction();
+
+                _logger.LogError(ex, "Erro ao atualizar item");
+                return CommandResponse.Fail("Erro ao atualizar item");
+            }
         }
 
         public async Task<CommandResponse> Handle(DeleteTodoItemRequest request)
@@ -63,12 +88,26 @@ namespace Todo.Domain.Commands.Handlers
             if (todoItem == null)
                 return CommandResponse.Fail("Item não encontrado");
 
-            await _uow.TodoItems.Remove(todoItem);
-            await _uow.Commit();
+            await _uow.BeginTransaction();
 
-            await _mediator.Publish(new DeletedTodoItemNotification(todoItem));
+            try
+            {
+                await _uow.TodoItems.Remove(todoItem);
+                await _uow.Commit();
 
-            return CommandResponse.Ok;
+                await _mediator.Publish(new DeletedTodoItemNotification(todoItem));
+
+                await _uow.CommitTransaction();
+
+                return CommandResponse.Ok;
+            }
+            catch (Exception ex)
+            {
+                await _uow.RollbackTransaction();
+
+                _logger.LogError(ex, "Erro ao deletar item");
+                return CommandResponse.Fail("Erro ao deletar item");
+            }
         }
 
         public async Task<CommandResponse> Handle(MarkAsDoneTodoItemRequest request)
@@ -83,11 +122,25 @@ namespace Todo.Domain.Commands.Handlers
 
             todoItem.MarkAsDone();
 
-            await _uow.Commit();
+            await _uow.BeginTransaction();
 
-            await _mediator.Publish(new MarkedAsDoneTodoItemNotification(todoItem));
+            try
+            {                
+                await _uow.Commit();
 
-            return CommandResponse.Ok;
+                await _mediator.Publish(new MarkedAsDoneTodoItemNotification(todoItem));
+
+                await _uow.CommitTransaction();
+
+                return CommandResponse.Ok;
+            }
+            catch (Exception ex)
+            {
+                await _uow.RollbackTransaction();
+
+                _logger.LogError(ex, "Erro ao marcar item como feito");
+                return CommandResponse.Fail("Erro ao marcar item como feito");
+            }
         }
     }
 }
